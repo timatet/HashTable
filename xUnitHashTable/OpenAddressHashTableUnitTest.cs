@@ -37,18 +37,29 @@ namespace xUnitHashTable
         }
 
         [Fact]
-        public void Test()
+        public void AfterAddingCountMustBeIncremented()
         {
             OpenAddressHashTable<int, string> HashTable = new OpenAddressHashTable<int, string>();
 
-            HashTable.Add(0, "a");
-            HashTable.Add(7, "a");
-            HashTable.Add(14, "a");
+            int oldCount = HashTable.Count;
 
-            HashTable.Remove(7);
+            HashTable.Add(1, string.Empty);
 
-            Assert.True(HashTable.ContainsKey(14));
-            Assert.False(HashTable.ContainsKey(7));
+            int newCount = HashTable.Count;
+
+            Assert.Equal(newCount, oldCount + 1);
+        }
+
+        [Fact]
+        public void AfterAddingExistItemThrowingException()
+        {
+            OpenAddressHashTable<int, string> HashTable = new OpenAddressHashTable<int, string>();
+            HashTable.Add(1, string.Empty);
+
+            Assert.Throws<ItemAlreadyExistInTableException>(() =>
+            {
+                HashTable.Add(1, "a");
+            });
         }
     }
 }

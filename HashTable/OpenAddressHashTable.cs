@@ -61,7 +61,7 @@ namespace HashTable
                         break;
                     iterationNumber++;
                     if (iterationNumber >= Capacity)
-                        throw new ApplicationException("HashTable full!");
+                        throw new HashTableIsFullException();
                 }
             }
 
@@ -84,7 +84,7 @@ namespace HashTable
             //Причем такой элемент не должен уже содержаться в таблице
             if (_table[place].Equals(pairForInsert))
             {
-                throw new ArgumentException();
+                throw new ItemAlreadyExistInTableException();
             }
 
             //Иначе ячейка занята другим элементов
@@ -126,7 +126,7 @@ namespace HashTable
 
             if (ItemForRemoving == null)
             {
-                throw new ArgumentException("Item not exist");
+                throw new ItemNotExistInTableException();
             }
 
             ItemForRemoving.DeletePair();

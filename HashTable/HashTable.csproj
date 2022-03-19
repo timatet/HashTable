@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions.cs" />
     <Compile Include="HashMaker.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="KeyValuePair.cs" />
