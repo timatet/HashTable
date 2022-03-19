@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -16,59 +17,65 @@ namespace MyApp
             var sr = new StreamReader("WarAndWorld.txt");
             Dictionary<string, int> Frequencies = new Dictionary<string, int>();
 
-            string[] text = sr.ReadToEnd().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-            //Создание частотного словаря
-            foreach (var item in text)
-                if (Frequencies.ContainsKey(item))
-                    Frequencies[item]++;
-                else
-                    Frequencies.Add(item, 1);
+            string[] words = sr.ReadToEnd().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             Init();
 
             Console.WriteLine("Процесс пошел");
 
-            var hashTable = new OpenAddressHashTable<string, int>();
-            var dictionary = new Dictionary<string, int>();
-
-            stopWatch.Start();
-            foreach (var pair in Frequencies)
+            for (double i = 0.75; i <= 0.85; i += 0.01)
             {
-                hashTable.Add(pair.Key, pair.Value);
+                Console.WriteLine("FF: " + i);
+                stopWatch.Restart();
+                UseHashTable(words, i);
+                stopWatch.Stop();
+                Console.WriteLine("\t HASH: " + stopWatch.ElapsedMilliseconds);
             }
+
+            stopWatch.Restart();
+            UseDictionary(words);
             stopWatch.Stop();
-            Console.WriteLine("HT.ADD: " + stopWatch.ElapsedMilliseconds);
+            Console.WriteLine("DICT: " + stopWatch.ElapsedMilliseconds);
 
-            stopWatch.Start();
-            foreach (var pair in Frequencies)
-            {
-                dictionary.Add(pair.Key, pair.Value);
-            }
-            stopWatch.Stop();
-            Console.WriteLine("DI.ADD: " + stopWatch.ElapsedMilliseconds);
+            //Console.WriteLine(hashTable.Capacity);
 
-            var WordsWithFreqMore27 = Frequencies.Where(word => word.Value > 0).Select(word => word.Key);
+            Console.ReadKey();
+        }
 
-            stopWatch.Start();
+        public static void UseHashTable(string[] words, double FillFactor)
+        {
+            var hashTable = new OpenAddressHashTable<string, int>(FillFactor);
+
+            foreach (var item in words)
+                if (hashTable.ContainsKey(item))
+                    hashTable[item]++;
+                else
+                    hashTable.Add(item, 1);
+
+            var WordsWithFreqMore27 = new List<string>(hashTable.Where(word => word.Value > 27).Select(word => word.Key));
+
             foreach (var word in WordsWithFreqMore27)
             {
                 hashTable.Remove(word);
             }
-            stopWatch.Stop();
-            Console.WriteLine("HT.REM: " + stopWatch.ElapsedMilliseconds);
+        }
 
-            stopWatch.Start();
+        public static void UseDictionary(string[] words)
+        {
+            var dictionary = new Dictionary<string, int>();
+
+            foreach (var item in words)
+                if (dictionary.ContainsKey(item))
+                    dictionary[item]++;
+                else
+                    dictionary.Add(item, 1);
+
+            var WordsWithFreqMore27 = new List<string>(dictionary.Where(word => word.Value > 27).Select(word => word.Key));
+
             foreach (var word in WordsWithFreqMore27)
             {
                 dictionary.Remove(word);
             }
-            stopWatch.Stop();
-            Console.WriteLine("DI.REM: " + stopWatch.ElapsedMilliseconds);
-
-            Console.WriteLine(hashTable.Capacity);
-
-            Console.ReadKey();
         }
 
         public static void Init()
@@ -76,7 +83,7 @@ namespace MyApp
             OpenAddressHashTable<int, int> hashTable = new OpenAddressHashTable<int, int>();
             Dictionary<int, int> dict = new Dictionary<int, int>();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 10000; i++)
             {
                 hashTable.Add(i, i);
                 dict.Add(i, i);

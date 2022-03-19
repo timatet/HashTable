@@ -61,5 +61,17 @@ namespace xUnitHashTable
                 HashTable.Add(1, "a");
             });
         }
+
+        [Fact]
+        public void Test()
+        {
+            OpenAddressHashTable<int, string> HashTable = new OpenAddressHashTable<int, string>();
+            HashTable.Add(1, string.Empty);
+
+            Assert.Throws<ItemAlreadyExistInTableException>(() =>
+            {
+                HashTable.Add(1, "a");
+            });
+        }
     }
 }
