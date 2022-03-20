@@ -19,30 +19,74 @@ namespace MyApp
 
             string[] words = sr.ReadToEnd().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
+            //docs.microsoft.com/en-us/previous-versions/ms379571(v=vs.80)?redirectedfrom=MSDN#datastructures20_2_topic6
+
             Init();
+            double startFillFactor, endFillFactor;
+            int countTests;
 
-            Console.WriteLine("Процесс пошел");
+            Console.WriteLine("> Process started...");
+            Console.Write("Use optimal settings? (y/n):\t");
 
-            for (double i = 0.75; i <= 0.85; i += 0.01)
-            {
-                Console.WriteLine("FF: " + i);
-                stopWatch.Restart();
-                UseHashTable(words, i);
-                stopWatch.Stop();
-                Console.WriteLine("\t HASH: " + stopWatch.ElapsedMilliseconds);
+            switch (Console.ReadLine()) {
+                case "n":
+                    Console.Write("Enter the start FillFactor (,):\t");
+                    startFillFactor = double.Parse(Console.ReadLine());
+                    Console.Write("Enter the end FillFactor (,):\t");
+                    endFillFactor = double.Parse(Console.ReadLine());
+                    Console.Write("Enter the count of tests (int):\t");
+                    countTests = int.Parse(Console.ReadLine());
+                    break;
+                case "y":
+                    startFillFactor = 0.75; //optimal: 0.77; microsoft: 0.72
+                    endFillFactor = 0.85;
+                    countTests = 1;
+                    break;
+                default:
+                    Console.ReadKey();
+                    return;
             }
 
-            stopWatch.Restart();
-            UseDictionary(words);
-            stopWatch.Stop();
-            Console.WriteLine("DICT: " + stopWatch.ElapsedMilliseconds);
+            Console.WriteLine("*******************************************");
+            double mediumTimeOfHashTableWork = 0;
+            double timeOfDictionaryWork = 0;
 
+            int iterationsCount = 0;
+            for (double i = startFillFactor; i <= endFillFactor; i += 0.01, iterationsCount++)
+            {
+                Console.Write("FillFactor: {0:0.00}", i);
+                double testMediumTimeOfHashTableWork = 0;
+                stopWatch.Restart();
+                TestHashTable(words, i);
+                stopWatch.Stop();
+                Console.Write("\t HASH: {0}", testMediumTimeOfHashTableWork = stopWatch.ElapsedMilliseconds);
+                for (int j = 0; j < countTests - 1; j++)
+                {
+                    stopWatch.Restart();
+                    TestHashTable(words, i);
+                    stopWatch.Stop();
+                    Console.Write("  {0}", stopWatch.ElapsedMilliseconds);
+                    testMediumTimeOfHashTableWork += stopWatch.ElapsedMilliseconds;
+                }
+                testMediumTimeOfHashTableWork /= countTests;
+                Console.WriteLine("\n\t\t\t Medium Time: {0:0.0}", testMediumTimeOfHashTableWork);
+                mediumTimeOfHashTableWork += stopWatch.ElapsedMilliseconds;
+            }
+            mediumTimeOfHashTableWork /= iterationsCount;
+            Console.WriteLine("\n\t\t\t Medium Time: {0:0.0}", mediumTimeOfHashTableWork);
+            Console.WriteLine("*******************************************");
+            stopWatch.Restart();
+            TestDictionary(words);
+            stopWatch.Stop();
+            Console.WriteLine("\t\t\t DICT: {0}", timeOfDictionaryWork = stopWatch.ElapsedMilliseconds);
+            Console.WriteLine("*******************************************");
+            Console.WriteLine("Difference ratio: {0:0.0000}", mediumTimeOfHashTableWork / timeOfDictionaryWork);
             //Console.WriteLine(hashTable.Capacity);
 
             Console.ReadKey();
         }
 
-        public static void UseHashTable(string[] words, double FillFactor)
+        public static void TestHashTable(string[] words, double FillFactor)
         {
             var hashTable = new OpenAddressHashTable<string, int>(FillFactor);
 
@@ -60,10 +104,10 @@ namespace MyApp
             }
         }
 
-        public static void UseDictionary(string[] words)
+        public static void TestDictionary(string[] words)
         {
             var dictionary = new Dictionary<string, int>();
-
+            
             foreach (var item in words)
                 if (dictionary.ContainsKey(item))
                     dictionary[item]++;
