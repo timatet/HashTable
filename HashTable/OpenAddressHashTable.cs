@@ -13,7 +13,7 @@ namespace HashTable
     public class OpenAddressHashTable<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>, 
         IHashTable<TKey, TValue> where TKey : IEquatable<TKey>
     {
-        private int[] SimplifyNumbers = new int[] { 7, 61, 167, 359, 857, 1721, 3469,
+        private int[] SimplifyNumbers = new int[] { 7, 19, 61, 167, 359, 857, 1721, 3469,
             7103, 14177, 29063, 50833, 99991, 331777, 614657, 1336337, 4477457,
             8503057, 29986577, 45212107, 99990001, 126247697 };
 
@@ -128,6 +128,10 @@ namespace HashTable
             }
         }
 
+        /// <summary>
+        /// Removes an item from the hash table.
+        /// </summary>
+        /// <param name="x">Item for removing</param>
         public void Remove(TKey x)
         {
             var ItemForRemoving = Find(x);
@@ -148,7 +152,7 @@ namespace HashTable
                 throw new ArgumentException("Дальнейшее расширение невозможно");
             }
 
-            Capacity = SimplifyNumbers[++CurrentSimplifyIndex]; 
+            Capacity = SimplifyNumbers.First(item => item > Capacity);
 
             var tmpOldTable = this._table;
 

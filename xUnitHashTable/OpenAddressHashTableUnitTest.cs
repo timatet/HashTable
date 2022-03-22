@@ -184,6 +184,16 @@ namespace xUnitHashTable
             }
         }
 
+        [Fact]
+        public void CapacityMustBeIncreasedAfterAddingSoManyItemsAfterInitHashTableWithAssignedCapacity()
+        {
+            OpenAddressHashTable<int, string> HashTable = new OpenAddressHashTable<int, string>(19);
+            
+            for (int i = 0; i < 19; i++)
+            {
+                HashTable.Add(i, string.Empty);
+            }
+        }
 
     }
 }
