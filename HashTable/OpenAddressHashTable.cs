@@ -23,14 +23,17 @@ namespace HashTable
 
         HashMaker<TKey> _hashMaker1, _hashMaker2;
         public int Count { get; private set; }
-        private double FillFactor = 0.8;
+        private double FillFactor = 0.77;
 
-        public OpenAddressHashTable() : this(0.8)
+        public OpenAddressHashTable() : this(7, 0.77)
         { }
 
         public OpenAddressHashTable(double fillfactor) : this(7, fillfactor)
         { }
-        
+
+        public OpenAddressHashTable(int capacity) : this(capacity, 0.77)
+        { }
+
         public OpenAddressHashTable(int capacity, double fillfactor)
         {
             _table = new Pair<TKey, TValue>[capacity];
